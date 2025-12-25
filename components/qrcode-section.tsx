@@ -4,22 +4,19 @@ import { Card } from "@/components/ui/card"
 
 const qrCodes = [
   {
-    id: 1,
-    title: "关注公众号",
-    description: "获取最新园区动态",
-    query: "wechat official account QR code",
+    title: "小红书",
+    description: "搜索与关注园区故事",
+    src: "/小红书二维码.png",
   },
   {
-    id: 2,
-    title: "企业入驻申请",
-    description: "在线提交入驻申请",
-    query: "business application form QR code",
+    title: "微信",
+    description: "扫码联系园区顾问",
+    src: "/公众号二维码.png",
   },
   {
-    id: 3,
-    title: "联系我们",
-    description: "添加企业微信咨询",
-    query: "wechat business contact QR code",
+    title: "抖音",
+    description: "视频看园区动态",
+    src: "/抖音二维码.png",
   },
 ]
 
@@ -35,13 +32,13 @@ export function QRCodeSection() {
 
         <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-3">
           {qrCodes.map((qr) => (
-            <Card key={qr.id} className="p-8 text-center shadow-lg">
+            <Card key={qr.title} className="p-8 text-center shadow-lg">
               <div className="mb-6 flex justify-center">
-                <div className="h-48 w-48 overflow-hidden rounded-lg bg-muted">
+                <div className="h-48 w-48 overflow-hidden rounded-xl bg-muted">
                   <img
-                    src={`/.jpg?height=200&width=200&query=${qr.query}`}
+                    src={qr.src}
                     alt={qr.title}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-contain"
                   />
                 </div>
               </div>
@@ -49,10 +46,6 @@ export function QRCodeSection() {
               <p className="text-sm text-muted-foreground">{qr.description}</p>
             </Card>
           ))}
-        </div>
-
-        <div className="mt-16 text-center">
-          <p className="text-muted-foreground">地址：杭州市 XX 区 XX 路 XX 号 | 电话：0571-XXXX-XXXX</p>
         </div>
       </div>
     </section>

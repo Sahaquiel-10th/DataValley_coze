@@ -12,7 +12,7 @@ export function AssetVideoSection() {
         <div className="mx-auto max-w-5xl">
           <div className="aspect-video overflow-hidden rounded-lg shadow-2xl">
             <video className="h-full w-full object-cover" controls playsInline>
-              <source src="/videos/asset.mp4" type="video/mp4" />
+              <source src="/3-资产视频.mp4" type="video/mp4" />
               您的浏览器不支持视频播放
             </video>
           </div>
