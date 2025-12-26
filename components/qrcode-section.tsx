@@ -22,30 +22,28 @@ const qrCodes = [
 
 export function QRCodeSection() {
   return (
-    <section className="bg-background py-20 md:py-32">
+    <section className="bg-background py-12 md:py-24">
       <div className="container mx-auto px-4">
-        <div className="mb-16 text-center">
-          <h2 className="mb-4 font-mono text-3xl font-bold md:text-5xl text-balance">联系方式</h2>
-          <div className="mx-auto mb-6 h-1 w-20 bg-accent" />
-          <p className="text-lg text-muted-foreground">扫描二维码，了解更多信息</p>
+        <div className="mb-12 text-center">
+          <h2 className="mb-3 font-mono text-3xl font-bold md:text-5xl text-balance">联系方式</h2>
+          <div className="mx-auto mb-5 h-1 w-20 bg-accent" />
+          <p className="text-base text-muted-foreground md:text-lg">扫描二维码，了解更多信息</p>
         </div>
 
-        <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-3">
-          {qrCodes.map((qr) => (
-            <Card key={qr.title} className="p-8 text-center shadow-lg">
-              <div className="mb-6 flex justify-center">
-                <div className="h-48 w-48 overflow-hidden rounded-xl bg-muted">
-                  <img
-                    src={qr.src}
-                    alt={qr.title}
-                    className="h-full w-full object-contain"
-                  />
+        <div className="mx-auto max-w-5xl">
+          <div className="grid grid-cols-3 gap-4">
+            {qrCodes.map((qr) => (
+              <div key={qr.title} className="flex flex-col items-center gap-2">
+                <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-xl bg-white sm:h-28 sm:w-28 md:h-32 md:w-32">
+                  <img src={qr.src} alt={qr.title} className="h-full w-full object-contain" />
+                </div>
+                <div className="text-center">
+                  <h3 className="mb-1 text-sm font-bold sm:text-base md:mb-1.5">{qr.title}</h3>
+                  <p className="text-xs text-muted-foreground sm:text-sm">{qr.description}</p>
                 </div>
               </div>
-              <h3 className="mb-2 text-xl font-bold">{qr.title}</h3>
-              <p className="text-sm text-muted-foreground">{qr.description}</p>
-            </Card>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -5,7 +5,7 @@ export function AssetVideoSection() {
   const videoSrc = process.env.NEXT_PUBLIC_V2_URL || "https://datavalleymedia.aiarrival.cn/video02.mp4"
 
   return (
-    <section className="bg-black py-20 md:py-32">
+    <section className="bg-black py-12 md:py-24 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
           <h2 className="mb-4 font-mono text-3xl font-bold text-white md:text-5xl text-balance">实力背景</h2>

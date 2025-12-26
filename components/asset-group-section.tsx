@@ -4,24 +4,24 @@ import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 
 const images = [
-  { src: "/4-杭州城投资产集团介绍配图-1.png", alt: "城投资产集团 办公楼" },
-  { src: "/4-杭州城投资产集团介绍配图-2.png", alt: "城投资产集团 会议空间" },
+  { src: "/4-杭州城投资产集团介绍配图-1.png", alt: "城投资产集团 周边重要地点" },
+  { src: "/4-杭州城投资产集团介绍配图-2.png", alt: "城投资产集团 周边项目密度" },
   { src: "/4-杭州城投资产集团介绍配图-3.png", alt: "城投资产集团 园区环境" },
   { src: "/4-杭州城投资产集团介绍配图-4.png", alt: "城投资产集团 街区商业" },
-  { src: "/4-杭州城投资产集团介绍配图-5.png", alt: "城投资产集团 活动场景" },
+  { src: "/4-杭州城投资产集团介绍配图-5.png", alt: "城投资产集团 建筑外观" },
 ]
 
 export function AssetGroupSection() {
   return (
-    <section className="bg-secondary py-20 md:py-32">
+    <section className="bg-secondary py-12 md:py-24">
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
           <h2 className="mb-4 font-mono text-3xl font-bold md:text-5xl text-balance">杭州城投资产集团</h2>
           <div className="mx-auto mb-8 h-1 w-20 bg-accent" />
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr]">
-          <Card className="h-full border border-muted-foreground/10 bg-card p-8 shadow-xl">
+        <div className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr]">
+          <Card className="h-full border border-muted-foreground/10 bg-card p-6 shadow-xl md:p-8">
             <div className="flex flex-col gap-4">
               <Badge variant="secondary" className="w-fit px-3 py-1 text-xs uppercase tracking-wide">
                 杭州城投资产集团介绍
@@ -48,7 +48,7 @@ export function AssetGroupSection() {
             </div>
           </Card>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {images.map((image, index) => (
               <Card
                 key={image.src}
@@ -56,12 +56,10 @@ export function AssetGroupSection() {
                   index === 0 ? "col-span-2" : ""
                 }`}
               >
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  className="h-full w-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                <div className="relative h-36 w-full overflow-hidden sm:h-44 md:h-52">
+                  <img src={image.src} alt={image.alt} className="h-full w-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                </div>
                 <span className="absolute bottom-3 left-3 rounded-full bg-white/80 px-3 py-1 text-xs font-medium text-foreground shadow">
                   {image.alt}
                 </span>

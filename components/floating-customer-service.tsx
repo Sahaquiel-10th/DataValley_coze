@@ -5,27 +5,147 @@ import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 
+type ChatMessage = { role: "user" | "assistant"; content: string }
+
+const initialMessages: ChatMessage[] = [
+  { role: "assistant", content: "您好！我是未来数智港智能客服，有什么可以帮助您的吗？" },
+]
+
 export function FloatingCustomerService() {
   const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState<Array<{ role: "user" | "assistant"; content: string }>>([
-    { role: "assistant", content: "您好！我是未来数智港智能客服，有什么可以帮助您的吗？" },
-  ])
+  const [messages, setMessages] = useState<Array<ChatMessage>>(initialMessages)
   const [inputValue, setInputValue] = useState("")
+  const [isSending, setIsSending] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSend = () => {
-    if (!inputValue.trim()) return
+  const appendAssistantContent = (content: string) => {
+    setMessages((prev) => {
+      const next = [...prev]
+      const lastIndex = next.length - 1
+      if (next[lastIndex]?.role === "assistant") {
+        next[lastIndex] = { ...next[lastIndex], content }
+      }
+      return next
+    })
+  }
 
-    const newMessages = [
-      ...messages,
-      { role: "user" as const, content: inputValue },
-      {
-        role: "assistant" as const,
-        content: "感谢您的咨询！我们的工作人员会尽快回复您。（此为演示版本，后续将接入AI智能体）",
-      },
-    ]
+  const extractTextFromPayload = (payload: unknown): string => {
+    // The upstream API streams Server Sent Events with JSON payloads; we try a few common shapes.
+    if (!payload) return ""
+    if (typeof payload === "string") return payload
 
-    setMessages(newMessages)
+    if (typeof payload === "object") {
+      const data = payload as Record<string, any>
+
+      if (typeof data.type === "string" && data.type === "answer" && data.content?.answer) {
+        return typeof data.content.answer === "string" ? data.content.answer : ""
+      }
+
+      if (typeof data.content === "string") return data.content
+      if (Array.isArray(data.content)) {
+        return data.content
+          .map((item) => (typeof item === "string" ? item : item?.text ?? item?.content ?? ""))
+          .join("")
+      }
+
+      if (typeof data.msg === "string") return data.msg
+
+      if (data.data) {
+        const nested = data.data
+        if (typeof nested.content === "string") return nested.content
+        if (Array.isArray(nested.content)) {
+          return nested.content
+            .map((item: any) => (typeof item === "string" ? item : item?.text ?? item?.content ?? ""))
+            .join("")
+        }
+      }
+    }
+
+    return ""
+  }
+
+  const handleSend = async () => {
+    if (!inputValue.trim() || isSending) return
+
+    const question = inputValue.trim()
     setInputValue("")
+    setError(null)
+    setMessages((prev) => [...prev, { role: "user", content: question }, { role: "assistant", content: "" }])
+    setIsSending(true)
+
+    try {
+      const response = await fetch("/api/coze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: question }),
+      })
+
+      if (!response.ok || !response.body) {
+        throw new Error("客服接口暂时不可用，请稍后再试")
+      }
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ""
+      let assistantText = ""
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split("\n")
+        buffer = lines.pop() ?? ""
+
+        for (const rawLine of lines) {
+          const line = rawLine.trim()
+          if (!line || line === "data: [DONE]" || line.startsWith("event:")) continue
+
+          const dataString = line.startsWith("data:") ? line.slice(5).trim() : line
+
+          let chunkText = ""
+          try {
+            const parsed = JSON.parse(dataString)
+            chunkText = extractTextFromPayload(parsed)
+          } catch {
+            chunkText = dataString
+          }
+
+          if (!chunkText) continue
+          assistantText += chunkText
+          appendAssistantContent(assistantText)
+        }
+      }
+
+      const pendingLine = buffer.trim()
+      if (pendingLine && !pendingLine.startsWith("event:")) {
+        const dataString = pendingLine.startsWith("data:") ? pendingLine.slice(5).trim() : pendingLine
+        let chunkText = ""
+        try {
+          const parsed = JSON.parse(dataString)
+          chunkText = extractTextFromPayload(parsed)
+        } catch {
+          chunkText = dataString
+        }
+        if (chunkText) {
+          assistantText += chunkText
+          appendAssistantContent(assistantText)
+        }
+      }
+
+      // If upstream closed without sending text, show a friendly fallback.
+      if (!assistantText) {
+        appendAssistantContent("抱歉，暂时没有获取到回复，请稍后重试。")
+      }
+    } catch (err) {
+      console.error("Failed to send message", err)
+      setError("客服接口暂时不可用，请稍后再试")
+      appendAssistantContent("抱歉，客服接口暂时不可用，请稍后再试。")
+    } finally {
+      setIsSending(false)
+    }
   }
 
   return (
@@ -71,13 +191,17 @@ export function FloatingCustomerService() {
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
                 placeholder="输入您的问题..."
-                className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-accent"
+                className="flex-1 rounded-lg border bg-background px-3 py-2 text-base outline-none focus:ring-2 focus:ring-accent"
               />
-              <Button onClick={handleSend} size="sm" className="bg-accent hover:bg-accent/90">
+              <Button onClick={handleSend} size="sm" className="bg-accent hover:bg-accent/90" disabled={isSending}>
                 发送
               </Button>
+            </div>
+            <div className="mt-2 min-h-[20px] text-xs text-muted-foreground">
+              {isSending && <span>智能客服思考中，请稍候...</span>}
+              {error && <span className="text-red-500">{error}</span>}
             </div>
           </div>
         </Card>
