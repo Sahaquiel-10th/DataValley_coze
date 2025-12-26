@@ -1,6 +1,8 @@
 "use client"
 
 export function HeroSection() {
+  const videoSrc = process.env.NEXT_PUBLIC_VIDEO1_URL || "/1-星聚荟视频.mp4"
+
   return (
     <section className="relative w-full bg-black">
       <div className="border-b border-white/10 px-6 py-8 text-center md:py-12">
@@ -11,7 +13,7 @@ export function HeroSection() {
       <div className="relative mx-auto max-w-6xl px-4 py-8 md:py-12">
         <div className="aspect-video overflow-hidden rounded-xl border border-white/10 shadow-2xl">
           <video className="h-full w-full object-cover" autoPlay muted loop playsInline controls>
-            <source src="/1-星聚荟视频.mp4" type="video/mp4" />
+            <source src={videoSrc} type="video/mp4" />
             您的浏览器不支持视频播放
           </video>
         </div>
