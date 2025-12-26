@@ -1,7 +1,7 @@
 "use client"
 
 export function AssetVideoSection() {
-  const videoSrc = process.env.NEXT_PUBLIC_VIDEO2_URL || "/3-资产视频.mp4"
+  const videoSrc = process.env.NEXT_PUBLIC_VIDEO2_URL || "video02.mp4"
 
   return (
     <section className="bg-black py-20 md:py-32">

@@ -1,7 +1,7 @@
 "use client"
 
 export function HeroSection() {
-  const videoSrc = process.env.NEXT_PUBLIC_VIDEO1_URL || "/1-星聚荟视频.mp4"
+  const videoSrc = process.env.NEXT_PUBLIC_VIDEO1_URL || "/video01.mp4"
 
   return (
     <section className="relative w-full bg-black">
