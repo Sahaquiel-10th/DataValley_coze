@@ -2,7 +2,7 @@
 
 export function AssetVideoSection() {
   // Fallback to hosted file so deployment still works even if env is missing at build time
-  const videoSrc = process.env.NEXT_PUBLIC_VIDEO2_URL || "https://datavalleymedia.aiarrival.cn/video02.mp4"
+  const videoSrc = process.env.NEXT_PUBLIC_V2_URL || "https://datavalleymedia.aiarrival.cn/video02.mp4"
 
   return (
     <section className="bg-black py-20 md:py-32">
