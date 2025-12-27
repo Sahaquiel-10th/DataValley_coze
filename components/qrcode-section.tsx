@@ -6,17 +6,17 @@ const qrCodes = [
   {
     title: "小红书",
     description: "搜索与关注园区故事",
-    src: "/小红书二维码.png",
+    src: "/小红书.png",
   },
   {
     title: "微信",
     description: "扫码联系园区顾问",
-    src: "/公众号二维码.png",
+    src: "/公众号.png",
   },
   {
     title: "抖音",
     description: "视频看园区动态",
-    src: "/抖音二维码.png",
+    src: "/抖音.png",
   },
 ]
 
