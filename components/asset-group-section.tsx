@@ -23,7 +23,10 @@ export function AssetGroupSection() {
         <div className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr]">
           <Card className="h-full border border-muted-foreground/10 bg-card p-6 shadow-xl md:p-8">
             <div className="flex flex-col gap-4">
-              <Badge variant="secondary" className="w-fit px-3 py-1 text-xs uppercase tracking-wide">
+              <Badge
+                variant="secondary"
+                className="w-fit px-3 py-1 text-xs uppercase tracking-wide border-transparent bg-[#0B2F6C] text-white"
+              >
                 杭州城投资产集团介绍
               </Badge>
               <p className="leading-relaxed text-foreground text-pretty">

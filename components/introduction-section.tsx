@@ -5,15 +5,6 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 
-const stats = [
-  { label: "总建筑面积", value: "约 4.4 万㎡" },
-  { label: "整体出租率", value: "78.72%" },
-  { label: "科技类企业占比", value: "68%" },
-  { label: "民营企业占比", value: "95%" },
-  { label: "小微企业占比", value: "85%" },
-  { label: "孵化容量", value: "125 个工位 / 7 间独立室" },
-]
-
 const services = [
   { title: "政务服务", detail: "联动市、区数据局、发改经信局等部门，提供政策解读、项目申报、场景对接。" },
   { title: "金融服务", detail: "合作杭州城基投资、方圆金鼎等机构，为企业提供融资对接与资本赋能。" },
@@ -22,12 +13,14 @@ const services = [
 ]
 
 const gallery = [
-  { src: "/2-未来数智港介绍配图-1.jpg", alt: "未来数智港外观" },
-  { src: "/2-未来数智港介绍配图-2.jpg", alt: "未来数智港大堂" },
-  { src: "/2-未来数智港介绍配图-3.jpg", alt: "未来数智港会议空间" },
-  { src: "/2-未来数智港介绍配图-4.jpg", alt: "未来数智港" },
-  { src: "/2-未来数智港介绍配图-5.jpg", alt: "未来数智港公共区域" },
+  { src: "/2-未来数智港介绍配图-1.jpg", alt: "项目俯瞰" },
+  { src: "/2-未来数智港介绍配图-2.jpg", alt: "项目景观空间" },
+  { src: "/2-未来数智港介绍配图-3.jpg", alt: "项目办公空间" },
+  { src: "/2-未来数智港介绍配图-4.jpg", alt: "项目主入口" },
+  { src: "/2-未来数智港介绍配图-5.jpg", alt: "项目活动空间" },
 ]
+
+const deepBlueBadge = "border-transparent bg-[#0B2F6C] text-white"
 
 function ExpandableText({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
@@ -54,22 +47,10 @@ export function IntroductionSection() {
 
       <div className="container relative mx-auto px-4">
         <div className="mx-auto max-w-4xl text-center">
-          <p className="mb-3 text-sm uppercase tracking-[0.35em] text-muted-foreground">Hangzhou · Future Data Valley</p>
           <h2 className="mb-4 font-mono text-3xl font-bold md:mb-6 md:text-5xl text-balance">城投资产·未来数智港</h2>
           <p className="text-base leading-relaxed text-muted-foreground md:text-lg text-pretty">
             在数字经济的时代浪潮中，一座以“数智产业”为核心的现代化产业园——城投资产·未来数智港，依托杭州东站枢纽的独特优势，加速成长为杭州乃至长三角地区的产业新地标，致力于打造“全国企业来杭第一站”的办公金名片。
           </p>
-        </div>
-
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {stats.map((stat) => (
-            <Card key={stat.label} className="border border-muted-foreground/10 bg-card shadow-md">
-              <div className="flex h-full flex-col gap-1 p-4 text-left">
-                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{stat.label}</p>
-                <p className="text-xl font-semibold text-foreground">{stat.value}</p>
-              </div>
-            </Card>
-          ))}
         </div>
 
         <div className="mt-8 space-y-4">
@@ -111,7 +92,7 @@ export function IntroductionSection() {
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
           <Card className="border border-muted-foreground/10 bg-card shadow-xl">
             <div className="flex flex-col gap-4 p-6 md:p-8">
-              <Badge variant="secondary" className="w-fit px-3 py-1 text-xs uppercase tracking-wide">
+              <Badge variant="secondary" className={`w-fit px-3 py-1 text-xs uppercase tracking-wide ${deepBlueBadge}`}>
                 区位优势
               </Badge>
               <h3 className="text-xl font-semibold text-foreground md:text-2xl">从交通枢纽到数智枢纽</h3>
@@ -125,7 +106,7 @@ export function IntroductionSection() {
 
           <Card className="border border-muted-foreground/10 bg-card shadow-xl">
             <div className="flex flex-col gap-4 p-6 md:p-8">
-              <Badge variant="secondary" className="w-fit px-3 py-1 text-xs uppercase tracking-wide">
+              <Badge variant="secondary" className={`w-fit px-3 py-1 text-xs uppercase tracking-wide ${deepBlueBadge}`}>
                 空间布局
               </Badge>
               <h3 className="text-xl font-semibold text-foreground md:text-2xl">一站式全周期产业生态</h3>
@@ -138,9 +119,6 @@ export function IntroductionSection() {
                   <li className="rounded-lg bg-muted/50 px-4 py-3 text-sm leading-relaxed">
                     <span className="font-semibold">3—4 层：</span>众创空间、孵化苗圃、联合办公区（钱唐量子空间），提供 10㎡-8000㎡ 灵活办公，支持自由分割与定制化装修，实现“拎包入住”。
                   </li>
-                  <li className="rounded-lg bg-muted/50 px-4 py-3 text-sm leading-relaxed">
-                    园区出租率已达 <span className="font-semibold">78.72%</span>，科技类企业占比 <span className="font-semibold">68%</span>，民营企业占 <span className="font-semibold">95%</span>，小微企业达 <span className="font-semibold">85%</span>，形成“科技主导、民企集聚、小微活跃”的产业生态。
-                  </li>
                 </ul>
               </ExpandableText>
             </div>
@@ -150,7 +128,7 @@ export function IntroductionSection() {
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
           <Card className="border border-muted-foreground/10 bg-card shadow-xl">
             <div className="flex flex-col gap-4 p-6 md:p-8">
-              <Badge variant="secondary" className="w-fit px-3 py-1 text-xs uppercase tracking-wide">
+              <Badge variant="secondary" className={`w-fit px-3 py-1 text-xs uppercase tracking-wide ${deepBlueBadge}`}>
                 孵化体系
               </Badge>
               <h3 className="text-xl font-semibold text-foreground md:text-2xl">陪伴企业从 0 到 1</h3>
@@ -164,7 +142,7 @@ export function IntroductionSection() {
 
           <Card className="border border-muted-foreground/10 bg-card shadow-xl">
             <div className="flex flex-col gap-4 p-6 md:p-8">
-              <Badge variant="secondary" className="w-fit px-3 py-1 text-xs uppercase tracking-wide">
+              <Badge variant="secondary" className={`w-fit px-3 py-1 text-xs uppercase tracking-wide ${deepBlueBadge}`}>
                 服务体系
               </Badge>
               <h3 className="text-xl font-semibold text-foreground md:text-2xl">政企金社联动赋能</h3>
@@ -183,7 +161,7 @@ export function IntroductionSection() {
         <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr,0.8fr]">
           <Card className="border border-muted-foreground/10 bg-card shadow-xl">
             <div className="flex flex-col gap-4 p-6 md:p-8">
-              <Badge variant="secondary" className="w-fit px-3 py-1 text-xs uppercase tracking-wide">
+              <Badge variant="secondary" className={`w-fit px-3 py-1 text-xs uppercase tracking-wide ${deepBlueBadge}`}>
                 发展愿景
               </Badge>
               <h3 className="text-xl font-semibold text-foreground md:text-2xl">打造中国数谷·城市运营数据要素产业园</h3>
@@ -197,7 +175,7 @@ export function IntroductionSection() {
 
           <Card className="border border-muted-foreground/10 bg-card shadow-xl">
             <div className="flex flex-col gap-4 p-6 md:p-8">
-              <Badge variant="secondary" className="w-fit px-3 py-1 text-xs uppercase tracking-wide">
+              <Badge variant="secondary" className={`w-fit px-3 py-1 text-xs uppercase tracking-wide ${deepBlueBadge}`}>
                 结语与联系方式
               </Badge>
               <ExpandableText>
