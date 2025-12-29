@@ -87,6 +87,28 @@ const extractChunkText = (record: unknown): string => {
   return ""
 }
 
+const extractErrorMessage = (payload: any): string => {
+  if (!payload || typeof payload !== "object") return ""
+
+  const code = payload?.content?.message_end?.code
+  const message = payload?.content?.message_end?.message
+  if (code && code !== "0" && code !== 0 && message) {
+    return `${message}`
+  }
+
+  if (payload?.content?.error) {
+    const err = pickText(payload.content.error)
+    if (err) return err
+  }
+
+  if (payload?.error) {
+    const err = pickText(payload.error)
+    if (err) return err
+  }
+
+  return ""
+}
+
 const readStreamText = async (
   body: ReadableStream<Uint8Array>
 ): Promise<{ text: string; lastPayload: string | null; lastParsed: any }> => {
@@ -168,6 +190,7 @@ export async function POST(req: Request) {
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
+        Accept: "text/event-stream",
       },
       body: JSON.stringify({
         content: {
@@ -202,6 +225,7 @@ export async function POST(req: Request) {
     const contentType = upstreamResponse.headers.get("content-type") || ""
     if (contentType.includes("text/event-stream")) {
       const { text: replyText, lastPayload, lastParsed } = await readStreamText(upstreamResponse.body)
+      const upstreamError = extractErrorMessage(lastParsed)
       if (!replyText) {
         let fallback = ""
         if (lastParsed) {
@@ -213,6 +237,10 @@ export async function POST(req: Request) {
           } catch {
             fallback = lastPayload
           }
+        }
+
+        if (!fallback && upstreamError) {
+          fallback = upstreamError
         }
 
         if (fallback) {
@@ -232,6 +260,16 @@ export async function POST(req: Request) {
           status: 502,
           headers: { "Content-Type": "application/json" },
         })
+      }
+
+      if (upstreamError) {
+        return new Response(
+          JSON.stringify({ error: upstreamError, upstream: { status: "error", raw: lastParsed ?? lastPayload } }),
+          {
+            status: 502,
+            headers: { "Content-Type": "application/json" },
+          }
+        )
       }
 
       return new Response(JSON.stringify({ text: replyText }), {
@@ -256,6 +294,8 @@ export async function POST(req: Request) {
       // ignore parse errors; will fall back to raw text
     }
 
+    const upstreamError = parsedBody ? extractErrorMessage(parsedBody) : ""
+
     if (!replyText && rawText) {
       replyText = rawText.trim()
     }
@@ -265,6 +305,13 @@ export async function POST(req: Request) {
       if (fallback) {
         replyText = fallback
       }
+    }
+
+    if (upstreamError) {
+      return new Response(JSON.stringify({ error: upstreamError, raw: parsedBody ?? (rawText || undefined) }), {
+        status: 502,
+        headers: { "Content-Type": "application/json" },
+      })
     }
 
     if (!replyText) {
