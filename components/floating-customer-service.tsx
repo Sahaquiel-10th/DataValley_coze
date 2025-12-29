@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -12,6 +12,9 @@ const initialMessages: ChatMessage[] = [
 ]
 
 const REQUEST_TIMEOUT_MS = 25000
+const SESSION_STORAGE_KEY = "dv_session_id"
+const SESSION_COOKIE_NAME = "session_id"
+const SESSION_COOKIE_MAX_AGE = 60 * 60 * 24 * 365 // 1 year
 
 export function FloatingCustomerService() {
   const [isOpen, setIsOpen] = useState(false)
@@ -19,6 +22,7 @@ export function FloatingCustomerService() {
   const [inputValue, setInputValue] = useState("")
   const [isSending, setIsSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [sessionId, setSessionId] = useState<string | null>(null)
 
   const appendAssistantContent = (content: string) => {
     setMessages((prev) => {
@@ -29,6 +33,30 @@ export function FloatingCustomerService() {
       }
       return next
     })
+  }
+
+  useEffect(() => {
+    ensureSessionId()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const ensureSessionId = () => {
+    if (typeof window === "undefined") return null
+    const existing = window.localStorage.getItem(SESSION_STORAGE_KEY)?.trim()
+    if (existing) {
+      if (!sessionId) setSessionId(existing)
+      return existing
+    }
+    const generated =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? `anon_${crypto.randomUUID()}`
+        : `anon_${Date.now()}_${Math.random().toString(16).slice(2)}`
+    window.localStorage.setItem(SESSION_STORAGE_KEY, generated)
+    document.cookie = `${SESSION_COOKIE_NAME}=${encodeURIComponent(
+      generated
+    )}; path=/; max-age=${SESSION_COOKIE_MAX_AGE}; samesite=lax`
+    setSessionId(generated)
+    return generated
   }
 
   const handleSend = async () => {
@@ -43,6 +71,13 @@ export function FloatingCustomerService() {
     let timeoutId: number | undefined
 
     try {
+      const sid = sessionId || ensureSessionId()
+      if (!sid) {
+        setError("无法创建会话，请刷新重试")
+        setIsSending(false)
+        return
+      }
+
       const controller = new AbortController()
       timeoutId = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
 
@@ -50,8 +85,9 @@ export function FloatingCustomerService() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-session-id": sid,
         },
-        body: JSON.stringify({ text: question }),
+        body: JSON.stringify({ text: question, session_id: sid }),
         signal: controller.signal,
       })
 

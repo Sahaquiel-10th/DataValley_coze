@@ -3,6 +3,20 @@ const COZE_API_URL = (process.env.dv_coze_api_url ?? DEFAULT_COZE_API_URL).trim(
 const PROJECT_ID = Number(process.env.dv_coze_project_id ?? 7589126757580767247)
 const UPSTREAM_TIMEOUT_MS = 25000
 
+type IncomingBody = { text?: string; session_id?: string }
+
+const parseCookies = (cookieHeader?: string | null): Record<string, string> => {
+  if (!cookieHeader) return {}
+  return cookieHeader.split(";").reduce<Record<string, string>>((acc, part) => {
+    const [key, ...rest] = part.split("=")
+    if (!key) return acc
+    const k = key.trim()
+    if (!k) return acc
+    acc[k] = decodeURIComponent(rest.join("=").trim())
+    return acc
+  }, {})
+}
+
 const pickText = (value: any): string => {
   if (!value) return ""
 
@@ -162,11 +176,19 @@ export async function POST(req: Request) {
   let timeoutId: ReturnType<typeof setTimeout> | undefined
 
   try {
-    const { text } = (await req.json()) as { text?: string }
+    const { text, session_id: sessionIdFromBody } = (await req.json()) as IncomingBody
     const question = text?.trim()
+    const sessionIdFromHeader = req.headers.get("x-session-id")?.trim()
+    const cookies = parseCookies(req.headers.get("cookie"))
+    const sessionIdFromCookie = cookies["session_id"]?.trim()
+    const sessionId = sessionIdFromHeader || sessionIdFromCookie || sessionIdFromBody?.trim() || ""
 
     if (!question) {
       return new Response(JSON.stringify({ error: "Message is required" }), { status: 400 })
+    }
+
+    if (!sessionId) {
+      return new Response(JSON.stringify({ error: "session_id is required" }), { status: 400 })
     }
 
     const apiKey = process.env.dv_key_coze
@@ -205,6 +227,7 @@ export async function POST(req: Request) {
         },
         type: "query",
         project_id: PROJECT_ID,
+        session_id: sessionId,
       }),
       signal: controller.signal,
     })
