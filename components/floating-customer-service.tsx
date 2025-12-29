@@ -11,6 +11,8 @@ const initialMessages: ChatMessage[] = [
   { role: "assistant", content: "您好！我是未来数智港智能客服，有什么可以帮助您的吗？" },
 ]
 
+const REQUEST_TIMEOUT_MS = 25000
+
 export function FloatingCustomerService() {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Array<ChatMessage>>(initialMessages)
@@ -42,9 +44,9 @@ export function FloatingCustomerService() {
 
     try {
       const controller = new AbortController()
-      timeoutId = window.setTimeout(() => controller.abort(), 60000)
+      timeoutId = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
 
-      const response = await fetch("/api/wainao_proxy", {
+      const response = await fetch("/api/coze_proxy", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

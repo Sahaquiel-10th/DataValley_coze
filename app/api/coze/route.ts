@@ -1,8 +1,11 @@
-const DEFAULT_COZE_API_URL = "https://vyb4mmxp2f.coze.site/stream_run"
-const COZE_API_URL = process.env.dv_coze_api_url ?? DEFAULT_COZE_API_URL
-const PROJECT_ID = Number(process.env.dv_coze_project_id ?? 7588045061007441960)
+const DEFAULT_COZE_API_URL = "https://cz6m3ygnfy.coze.site/stream_run"
+const COZE_API_URL = (process.env.dv_coze_api_url ?? DEFAULT_COZE_API_URL).trim()
+const PROJECT_ID = Number(process.env.dv_coze_project_id ?? 7589126757580767247)
+const UPSTREAM_TIMEOUT_MS = 25000
 
 export async function POST(req: Request) {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined
+
   try {
     const { message } = (await req.json()) as { message?: string }
 
@@ -22,6 +25,9 @@ export async function POST(req: Request) {
     if (Number.isNaN(PROJECT_ID)) {
       return new Response(JSON.stringify({ error: "dv_coze_project_id is invalid" }), { status: 500 })
     }
+
+    const controller = new AbortController()
+    timeoutId = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS)
 
     const upstreamResponse = await fetch(COZE_API_URL, {
       method: "POST",
@@ -43,7 +49,13 @@ export async function POST(req: Request) {
         type: "query",
         project_id: PROJECT_ID,
       }),
+      signal: controller.signal,
     })
+
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+      timeoutId = undefined
+    }
 
     if (!upstreamResponse.ok || !upstreamResponse.body) {
       const errorText = await upstreamResponse.text().catch(() => "Failed to fetch from upstream")
@@ -62,6 +74,14 @@ export async function POST(req: Request) {
     })
   } catch (error) {
     console.error("Error handling Coze request", error)
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
+
+    if ((error as any)?.name === "AbortError") {
+      return new Response(JSON.stringify({ error: "Upstream request timed out" }), { status: 504 })
+    }
+
     return new Response(JSON.stringify({ error: "Unexpected server error" }), { status: 500 })
   }
 }
