@@ -103,8 +103,8 @@ export function FloatingCustomerService() {
       })
 
       if (!response.ok || !response.body) {
-        setError("接口有问题")
-        appendAssistantContent("接口有问题")
+        setError("问的人太多啦，等下再问？")
+        appendAssistantContent("问的人太多啦，等下再问？")
         return
       }
 
@@ -169,14 +169,14 @@ export function FloatingCustomerService() {
       }
 
       if (!receivedValidData) {
-        setError("接口有问题")
-        appendAssistantContent("接口有问题")
+        setError("问的人太多啦，等下再问？")
+        appendAssistantContent("问的人太多啦，等下再问？")
       }
     } catch (err) {
       console.error("Failed to send message", err)
       if (!receivedValidData) {
-        setError("接口有问题")
-        appendAssistantContent("接口有问题")
+        setError("问的人太多啦，等下再问？")
+        appendAssistantContent("问的人太多啦，等下再问？")
       }
     } finally {
       setIsSending(false)
